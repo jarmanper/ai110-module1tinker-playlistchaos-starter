@@ -1,113 +1,15 @@
-# Playlist Chaos
+# Summary
 
-Your AI assistant tried to build a smart playlist generator. The app runs, but some of the behavior is unpredictable. Your task is to explore the app, investigate the code, and use an AI assistant to debug and improve it.
+The core challenge of this activity is learning to treat AI-generated code as a hypothesis, not pure truth, even when it looks polished and runs without errors. The Playlist Chaos app demonstrates how subtle logic errors can hide in plain sight! One example is a song search that claims to work but returns wrong results, classification rules that contradict themselves, and statistics that don't add up. Students must develop a debugging workflow that combines three skills. First is observing unexpected behavior in the UI (the "what"), tracing that behavior back to specific code (the "where"), and using AI as a thinking partner to understand root causes rather than just getting quick fixes (the “why”/”how”).
 
-This activity is your first chance to practice AI-assisted debugging on a codebase that is slightly messy, slightly mysterious, and intentionally imperfect.
+## Where students struggle most
 
-You do not need to understand everything at once. Approach the app as a curious investigator, work with an AI assistant to explain what you find, and make targeted improvements.
+Where students will struggle most: Two patterns emerge pretty visibily. First, students often skip the exploration phase and jump straight to code, which means it is likely that they miss the crucial insight that using the app is debugging. Second, when Copilot offers an explanation, students accept it without comparing it to what they actually saw. The AI might explain what the code should do, but miss what it actually does. For example, a search function might look case-insensitive in the logic, but if the input isn't normalized first, it will fail. Copilot can explain both interpretations, and it’s the student's job to decide which one matches reality.
 
----
+## Where AI helped vs. misled
 
-## How the code is organized
+Where AI helped vs. misled: Copilot excels at explaining what a block of code does line-by-line, ask it to walk through the logic and it's highly reliable. It struggles with detecting the gap between intent and implementation. It will confidently explain a function's purpose without noticing that the function never actually enforces it. The most useful Copilot questions aren't "what does this do?" but "what assumptions does this code make, and what happens if they're violated?" and "why would this behavior surprise a user?"
 
-### `app.py`  
+## Guidance without answers
 
-The Streamlit user interface. It handles things like:
-
-- Showing and updating the mood profile  
-- Adding songs  
-- Displaying playlists  
-- Lucky pick  
-- Stats and history
-
-### `playlist_logic.py`  
-
-The logic behind the app, including:
-
-- Normalizing and classifying songs  
-- Building playlists  
-- Merging playlist data  
-- Searching  
-- Computing statistics  
-- Lucky pick mechanics
-
-You will need to look at both files to understand how the app behaves.
-
----
-
-## What you will do
-
-### 1. Explore the app  
-
-Run the app and try things out:
-
-- Add several songs with different titles, artists, genres, and energy levels  
-- Change the mood profile  
-- Use the search box  
-- Try the lucky pick  
-- Inspect the playlist tabs and stats  
-- Look at the history  
-
-As you explore, write down at least five things that feel confusing, inconsistent, or strange. These might be bugs, quirks, or unexpected design decisions.
-
-### 2. Ask AI for help understanding the code  
-
-Pick one issue from your list. Use an AI coding assistant to:
-
-- Explain the relevant code sections  
-- Walk through what the code is supposed to do  
-- Suggest reasons the behavior might not match expectations  
-
-For example:
-
-> "Here is the function that classifies songs. The app is mislabeling some songs. Help me understand what the function is doing and where the logic might need adjustment."
-
-Before making changes, summarize in your own words what you think is happening.
-
-### 3. Fix at least four issues  
-
-Make improvements based on your investigation.
-
-For each fix:
-
-- Identify the source of the issue  
-- Decide whether to accept or adjust the AI assistant's suggestions  
-- Update the code  
-- Add a short comment describing the fix  
-
-Your fixes may involve logic, calculations, search behavior, playlist grouping, lucky pick behavior, or anything else you discover.
-
-### 4. Test your changes  
-
-After each fix, try interacting with the app again:
-
-- Add new songs  
-- Change the profile  
-- Try search and stats  
-- Check whether playlists behave more consistently  
-
-Confirm that the behavior matches your expectations.
-
-### 5. Optional stretch goals  
-
-If you finish early or want an extra challenge, try one of these:
-
-- Improve search behavior  
-- Add a "Recently added" view  
-- Add sorting controls  
-- Improve how Mixed songs are handled  
-- Add new features to the history view  
-- Introduce better error handling for empty playlists  
-- Add a new playlist category of your own design  
-
----
-
-## Tips for success
-
-- You do not need to solve everything. Focus on exploring and learning.  
-- When confused, ask an AI assistant to explain the code or summarize behavior.  
-- Test the app often. Small experiments reveal useful clues.  
-- Treat surprising behavior as something worth investigating.  
-- Stay curious. The unpredictability is intentional and part of the experience.
-
-When you finish, Playlist Chaos will feel more predictable, and you will have taken your first steps into AI-assisted debugging.
+Guidance without answers: When a student shows me a bug they found, I will resist the urge to point them at the fix immediately. Instead, I’ll ask - "What did the app do? What did you expect instead? Now find the function that controls that behavior. Can you walk me through what that code does step-by-step?" It's important to make them build the connection between observation and code themselves, because that's where the real learning lies. I'll Let them use Copilot to understand, but make them decide whether Copilot's explanation actually matches their observations.
