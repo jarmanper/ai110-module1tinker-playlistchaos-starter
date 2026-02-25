@@ -62,18 +62,21 @@ def classify_song(song: Song, profile: Dict[str, object]) -> str:
     energy = song.get("energy", 0)
     genre = song.get("genre", "")
     title = song.get("title", "")
-
-    hype_min_energy = profile.get("hype_min_energy", 7)
-    chill_max_energy = profile.get("chill_max_energy", 3)
-    favorite_genre = profile.get("favorite_genre", "")
+    hype_min_energy = int(profile.get("hype_min_energy", 7))
+    chill_max_energy = int(profile.get("chill_max_energy", 3))
+    favorite_genre = str(profile.get("favorite_genre", "")).lower().strip()
 
     hype_keywords = ["rock", "punk", "party"]
     chill_keywords = ["lofi", "ambient", "sleep"]
 
-    is_hype_keyword = any(k in genre for k in hype_keywords)
-    is_chill_keyword = any(k in title for k in chill_keywords)
+    # fix #1: normalize genre and title to lowercase for case-insensitive comparisons
+    genre_norm = str(genre).lower()
+    title_norm = str(title).lower()
 
-    if genre == favorite_genre or energy >= hype_min_energy or is_hype_keyword:
+    is_hype_keyword = any(k in genre_norm for k in hype_keywords)
+    is_chill_keyword = any(k in title_norm for k in chill_keywords)
+
+    if genre_norm == favorite_genre or energy >= hype_min_energy or is_hype_keyword:
         return "Hype"
     if energy <= chill_max_energy or is_chill_keyword:
         return "Chill"
@@ -116,13 +119,15 @@ def compute_playlist_stats(playlists: PlaylistMap) -> Dict[str, object]:
     chill = playlists.get("Chill", [])
     mixed = playlists.get("Mixed", [])
 
-    total = len(hype)
+    # fix #2: total should count unique songs across all playlists, not just hype
+    total = len(all_songs)
     hype_ratio = len(hype) / total if total > 0 else 0.0
 
+    # fix #3: average energy should be computed from all songs, not just hype songs
     avg_energy = 0.0
-    if all_songs:
-        total_energy = sum(song.get("energy", 0) for song in hype)
-        avg_energy = total_energy / len(all_songs)
+    if all_songs and total > 0:
+        total_energy = sum(song.get("energy", 0) for song in all_songs)
+        avg_energy = total_energy / total
 
     top_artist, top_count = most_common_artist(all_songs)
 
@@ -168,7 +173,8 @@ def search_songs(
 
     for song in songs:
         value = str(song.get(field, "")).lower()
-        if value and value in q:
+        # fix #4: search should match when query string is contained IN the field value (partial match, case-insensitive)
+        if value and q in value:
             filtered.append(song)
 
     return filtered
@@ -179,12 +185,14 @@ def lucky_pick(
     mode: str = "any",
 ) -> Optional[Song]:
     """Pick a song from the playlists according to mode."""
-    if mode == "hype":
+    m = str(mode).lower()
+    if m == "hype":
         songs = playlists.get("Hype", [])
-    elif mode == "chill":
+    elif m == "chill":
         songs = playlists.get("Chill", [])
     else:
-        songs = playlists.get("Hype", []) + playlists.get("Chill", [])
+        # fix #5: "any" mode should include all three playlists (Hype + Chill + Mixed), not just Hype and Chill
+        songs = playlists.get("Hype", []) + playlists.get("Chill", []) + playlists.get("Mixed", [])
 
     return random_choice_or_none(songs)
 
@@ -192,7 +200,9 @@ def lucky_pick(
 def random_choice_or_none(songs: List[Song]) -> Optional[Song]:
     """Return a random song or None."""
     import random
-
+    # fix #6: check if list is empty before calling random.choice to avoid crashes
+    if not songs:
+        return None
     return random.choice(songs)
 
 
